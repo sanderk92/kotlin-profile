@@ -8,17 +8,17 @@ class Profile<T : Temporal, U : Any> private constructor(
 
     override fun iterator() = points.iterator()
 
-    fun get(time: T): Point<T, U>? =
-        points.firstOrNull { it.time == time }
+    fun get(time: T): Point<T, U>? = points.find { it.time == time }
 
     /**
      * Zip the points of the given profile into this profile matched by timestamp, applying the given mutator on
      * matching points. All points are included.
      */
-    // TODO
     fun zipOuter(other: Profile<T, U>, mutator: (U, U) -> U): Profile<T, U> =
         points
-            .map { it }
+            .plus(other.points)
+            .groupBy(Point<T, U>::time)
+            .map { (time, values) -> values.reduce { a, b -> Point(time, mutator(a.value, b.value)) } }
             .let(::Profile)
 
     /**
@@ -52,26 +52,21 @@ class Profile<T : Temporal, U : Any> private constructor(
         fun <T : Temporal, U : Any> empty(): Profile<T, U> = Profile(emptyList())
 
         /**
-         * A new profile containing a single value repeated from start until end time, incremented by the [TemporalUnit]
-         */
-        @Suppress("UNCHECKED_CAST")
-        fun <T : Temporal, U : Any> between(start: T, endExclusive: T, unit: TemporalUnit, value: U): Profile<T, U> =
-            (0 until unit.between(start, endExclusive))
-                .map { index -> Point(start.plus(index, unit) as T, value) }
-                .let(::Profile)
-
-        /**
-         * A new profile containing all values from the specified start time incremented by the [TemporalUnit]
+         * A new profile containing all values, starting at the specified start time and incremented by the unit
          */
         @Suppress("UNCHECKED_CAST")
         fun <T : Temporal, U : Any> of(start: T, unit: TemporalUnit, values: List<U>): Profile<T, U> =
             values
-                .mapIndexed { index, value ->
-                    Point(
-                        time = start.plus(unit.duration.multipliedBy(index.toLong())) as T,
-                        value = value
-                    )
-                }
+                .mapIndexed { i, value -> Point(start.plus(unit.duration.multipliedBy(i.toLong())) as T, value) }
+                .let(::Profile)
+
+        /**
+         * A new profile containing a single value repeated from start until end time, incremented by the unit
+         */
+        @Suppress("UNCHECKED_CAST")
+        fun <T : Temporal, U : Any> between(start: T, endExclusive: T, unit: TemporalUnit, value: U): Profile<T, U> =
+            (0 until unit.between(start, endExclusive))
+                .map { i -> Point(start.plus(i, unit) as T, value) }
                 .let(::Profile)
     }
 }
@@ -94,4 +89,4 @@ fun <T : Temporal, U : Any> Iterable<Profile<T, U>>.flattenInner(mutator: (U, U)
  * Flatten using  [Profile.zipOuter]
  */
 fun <T : Temporal, U : Any> Iterable<Profile<T, U>>.flattenOuter(mutator: (U, U) -> U) =
-    fold(empty<T, U>()) { a, b -> a.zipInner(b, mutator) }
+    fold(empty<T, U>()) { a, b -> a.zipOuter(b, mutator) }

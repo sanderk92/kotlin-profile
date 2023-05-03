@@ -2,6 +2,8 @@ import Profile.Companion.empty
 import java.time.temporal.Temporal
 import java.time.temporal.TemporalUnit
 
+data class Point<T : Temporal, U : Any>(val time: T, val value: U)
+
 class Profile<T : Temporal, U : Any> private constructor(
     private val points: List<Point<T, U>>,
 ) : Iterable<Point<T, U>> {
@@ -70,8 +72,6 @@ class Profile<T : Temporal, U : Any> private constructor(
                 .let(::Profile)
     }
 }
-
-data class Point<T : Temporal, U : Any>(val time: T, val value: U)
 
 /**
  * Flatten using [Profile.zipLeft]

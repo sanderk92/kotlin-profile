@@ -23,29 +23,6 @@ class Profile<T : Temporal, U : Any> private constructor(
             .map { (time, values) -> values.reduce { a, b -> Point(time, mutator(a.value, b.value)) } }
             .let(::Profile)
 
-    /**
-     * Zip the points of the given profile into this profile matched by timestamp, applying the given mutator on
-     * matching points. If a point in either profile is not found in the other profile, it is discarded.
-     */
-    fun zipInner(other: Profile<T, U>, mutator: (U, U) -> U): Profile<T, U> =
-        points
-            .mapNotNull { point -> findAndMutate(point, other.points, mutator) }
-            .let(::Profile)
-
-    /**
-     * Zip the points of the given profile into this profile matched by timestamp, applying the given mutator on
-     * matching points. If a point in the other profile is not found in this profile, it is discarded.
-     */
-    fun zipLeft(other: Profile<T, U>, mutator: (U, U) -> U): Profile<T, U> =
-        points
-            .map { point -> findAndMutate(point, other.points, mutator) ?: point }
-            .let(::Profile)
-
-    private fun findAndMutate(point: Point<T, U>, other: List<Point<T, U>>, mutator: (U, U) -> U): Point<T, U>? =
-        other
-            .firstOrNull { point.time == it.time }
-            ?.let { Point(point.time, mutator(point.value, it.value)) }
-
     companion object {
 
         /**
@@ -74,19 +51,7 @@ class Profile<T : Temporal, U : Any> private constructor(
 }
 
 /**
- * Flatten using [Profile.zipLeft]
+ * Flatten using [Profile.zip]
  */
 fun <T : Temporal, U : Any> Iterable<Profile<T, U>>.flatten(mutator: (U, U) -> U) =
-    fold(empty<T, U>()) { a, b -> a.zipLeft(b, mutator) }
-
-/**
- * Flatten using  [Profile.zipInner]
- */
-fun <T : Temporal, U : Any> Iterable<Profile<T, U>>.flattenInner(mutator: (U, U) -> U) =
-    fold(empty<T, U>()) { a, b -> a.zipInner(b, mutator) }
-
-/**
- * Flatten using  [Profile.zip]
- */
-fun <T : Temporal, U : Any> Iterable<Profile<T, U>>.flattenOuter(mutator: (U, U) -> U) =
     fold(empty<T, U>()) { a, b -> a.zip(b, mutator) }

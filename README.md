@@ -19,8 +19,6 @@ val profileTwo = Profile.between(start, end, ChronoUnit.HOURS, "value")
 val profileThree = Profile.of(start, ChronoUnit.HOURS, listOf("value1", "value2"))
 
 // Two profiles can be flattened
-val zipped = profileOne.zip(profileTwo)
-val flattened = listOf(profileOne, profileTwo, profileThree).flatten()
-
-// And more ease-of-use functions
+val zipped = profileOne.zip(profileTwo, String::plus)
+val flattened = listOf(profileOne, profileTwo).zip(String::plus)
 ```

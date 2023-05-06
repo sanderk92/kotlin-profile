@@ -12,10 +12,6 @@ class Ptu private constructor(val date: LocalDate, val index: Int, val zone: Zon
 
     val zonedDateTime: ZonedDateTime = Quarters.addTo(date.atStartOfDay().atZone(zone), index.toLong())
 
-    /**
-     * Use the specified [ZonedDateTime] to create a new [Ptu]. If the [ZonedDateTime] does not represent a
-     * multiple of 15 minutes, any extra minutes and seconds will be ignored and the previous index obtained.
-     */
     constructor(zonedDateTime: ZonedDateTime) : this(
         date = zonedDateTime.toLocalDate(),
         index = QuarterOfDay.getFrom(zonedDateTime).toInt(),

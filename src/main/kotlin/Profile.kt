@@ -16,7 +16,7 @@ class Profile<T : Temporal, U : Any> private constructor(
      * Zip the points of the given profile into this profile matched by timestamp, applying the given mutator on
      * matching points. If a point in either profile is not found in the other profile, it is appended.
      */
-    fun zipOuter(other: Profile<T, U>, mutator: (U, U) -> U): Profile<T, U> =
+    fun zip(other: Profile<T, U>, mutator: (U, U) -> U): Profile<T, U> =
         points
             .plus(other.points)
             .groupBy(Point<T, U>::time)
@@ -76,7 +76,7 @@ class Profile<T : Temporal, U : Any> private constructor(
 /**
  * Flatten using [Profile.zipLeft]
  */
-fun <T : Temporal, U : Any> Iterable<Profile<T, U>>.flattenLeft(mutator: (U, U) -> U) =
+fun <T : Temporal, U : Any> Iterable<Profile<T, U>>.flatten(mutator: (U, U) -> U) =
     fold(empty<T, U>()) { a, b -> a.zipLeft(b, mutator) }
 
 /**
@@ -86,7 +86,7 @@ fun <T : Temporal, U : Any> Iterable<Profile<T, U>>.flattenInner(mutator: (U, U)
     fold(empty<T, U>()) { a, b -> a.zipInner(b, mutator) }
 
 /**
- * Flatten using  [Profile.zipOuter]
+ * Flatten using  [Profile.zip]
  */
 fun <T : Temporal, U : Any> Iterable<Profile<T, U>>.flattenOuter(mutator: (U, U) -> U) =
-    fold(empty<T, U>()) { a, b -> a.zipOuter(b, mutator) }
+    fold(empty<T, U>()) { a, b -> a.zip(b, mutator) }

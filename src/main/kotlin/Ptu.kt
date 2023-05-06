@@ -93,12 +93,12 @@ object Quarters : TemporalUnit {
 }
 
 object QuarterOfDay : TemporalField {
-    override fun isDateBased(): Boolean {
-        return false
-    }
-
     override fun isTimeBased(): Boolean {
         return true
+    }
+
+    override fun isDateBased(): Boolean {
+        return false
     }
 
     override fun getBaseUnit(): TemporalUnit {

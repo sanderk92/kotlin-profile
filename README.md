@@ -10,17 +10,17 @@ val start = Instant.now().truncatedTo(ChronoUnit.DAYS)
 val end = start.plus(1, ChronoUnit.DAYS)
 
 // An empty profile
-val profileEmpty = Profile.empty<Instant, String>()
+val profileOne = Profile.empty<Instant, String>()
 
 // A profile with a single value repeated between two times
-val profileBetween = Profile.between(start, end, ChronoUnit.HOURS, "value")
+val profileTwo = Profile.between(start, end, ChronoUnit.HOURS, "value")
 
 // A profile with specific values starting at the given time
-val profileOf = Profile.of(start, ChronoUnit.HOURS, listOf("value1", "value2"))
+val profileThree = Profile.of(start, ChronoUnit.HOURS, listOf("value1", "value2"))
 
 // Two profiles can be flattened
-val zipped = profileBetween.zip(profileEmpty)
-val flattened = listOf(profileEmpty, profileBetween, profileOf).flatten()
+val zipped = profileOne.zip(profileTwo)
+val flattened = listOf(profileOne, profileTwo, profileThree).flatten()
 
 // And more ease-of-use functions
 ```

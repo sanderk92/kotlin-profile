@@ -1,4 +1,5 @@
 import Profile.Companion.empty
+import java.time.temporal.ChronoField
 import java.time.temporal.ChronoUnit
 import java.time.temporal.Temporal
 import java.time.temporal.TemporalUnit
@@ -22,8 +23,8 @@ class Profile<T : Temporal, U : Any> private constructor(
 
     /**
      * Zip the points of the given profile into this profile matched by timestamp, applying the given mutator on
-     * matching points. Correct order is guaranteed. Scale differences are ignored and zipping performed on exact time
-     * stamps. If equal scales are required, first manually adjust accordingly.
+     * matching points. Correct order is guaranteed. Scale differences are ignored and zipping is performed on exact
+     * timestamps.
      */
     fun zip(other: Profile<T, U>, mutator: (U, U) -> U): Profile<T, U> =
         this

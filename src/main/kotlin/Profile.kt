@@ -1,5 +1,4 @@
 import Profile.Companion.empty
-import java.time.temporal.ChronoField
 import java.time.temporal.ChronoUnit
 import java.time.temporal.Temporal
 import java.time.temporal.TemporalUnit
@@ -36,9 +35,10 @@ class Profile<T : Temporal, U : Any> private constructor(
     companion object {
 
         /**
-         * A new profile containing no values whatsoever. Defaults to the smallest supported linear scale; nanos.
+         * A new profile containing no values whatsoever.
          */
-        fun <T : Temporal, U : Any> empty(): Profile<T, U> = Profile(emptyList(), ChronoUnit.NANOS)
+        fun <T : Temporal, U : Any> empty(unit: ChronoUnit = ChronoUnit.MINUTES): Profile<T, U> =
+            Profile(emptyList(), unit)
 
         /**
          * A new profile containing all values, starting at the specified start time and a linear scale of unit.
